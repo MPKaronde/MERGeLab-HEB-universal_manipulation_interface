@@ -27,6 +27,9 @@ def main(session_dir, calibration_dir):
         calibration_dir = pathlib.Path(calibration_dir)
     assert calibration_dir.is_dir()
 
+    slam_setting_path = calibration_dir.joinpath('orb_slam3_setting.yaml')
+    slam_setting_args = ['--slam_setting', str(slam_setting_path)] if slam_setting_path.is_file() else []
+
     for session in session_dir:
         session = pathlib.Path(os.path.expanduser(session)).absolute()
 
@@ -62,7 +65,7 @@ def main(session_dir, calibration_dir):
                 'python', str(script_path),
                 '--input_dir', str(mapping_dir),
                 '--map_path', str(map_path)
-            ]
+            ] + slam_setting_args
             result = subprocess.run(cmd)
             assert result.returncode == 0
             assert map_path.is_file()
@@ -74,7 +77,7 @@ def main(session_dir, calibration_dir):
             'python', str(script_path),
             '--input_dir', str(demo_dir),
             '--map_path', str(map_path)
-        ]
+        ] + slam_setting_args
         result = subprocess.run(cmd)
         assert result.returncode == 0
 
